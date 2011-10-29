@@ -7,7 +7,23 @@ def ask_for(question, default = nil, color = :yellow)
   !default.nil? && answer.blank? ? default : answer
 end
 
-display "Applying Rails Admin Template"
+def rvm_run(command)
+  run "rvm #{@rvm} exec #{command}"
+end
+
+display "Applying Rails Admin App Template"
+
+display "Setup RVM"
+current_ruby, current_gemset = `rvm current`.strip.split('@')
+rvm_ruby = ask_for("Which RVM Ruby would you like to use? (#{current_ruby}) ", current_ruby)
+rvm_gemset = ask_for("What name should the custom gemset have? (#{@app_name}) ", @app_name)
+run "rvm #{rvm_ruby} gemset create #{rvm_gemset}"
+@rvm = "#{rvm_ruby}@#{rvm_gemset}"
+run "rvm use #{@rvm}"
+create_file ".rvmrc", "rvm use #{@rvm}"
+run "rvm rvmrc trust"
+rvm_run "gem install bundler"
+display "Using #{@rvm}"
 
 display "Include RSpec, Cucumber, FactoryGirl and RailsAdmin in Gemfile"
 append_to_file 'Gemfile', <<-RUBY
@@ -26,7 +42,7 @@ group :development, :test do
   gem 'launchy'
 end
 RUBY
-run 'bundle install'
+rvm_run 'bundle install'
 
 display "Install RSpec, Cucumber and RailsAdmin"
 generate 'rspec:install'
@@ -153,14 +169,27 @@ end
 display "Prepare Database"
 rake 'db:create'
 rake 'db:migrate'
-admin_email = ask_for("         -  Default Administrator Email: (admin@example.com)", :yellow)
-admin_password = ask_for("         -  Default Adminstrator Password: (111111)", :yellow)
+admin_email = ask_for("Default Administrator Email: (admin@example.com)", "admin@example.com", :yellow)
+admin_password = ask_for("Default Adminstrator Password: (111111)", "111111", :yellow)
 append_to_file 'db/seeds.rb', %Q{Administrator.create(:email => '#{admin_email}', :password => '#{admin_password}', :password_confirmation => '#{admin_password}') if Rails.env.development?\n}
 rake 'db:seed'
 
 display "Cleanup"
 remove_file 'README'
-create_file 'README', %Q{TODO\n}
+create_file 'README', <<-TEXT
+Welcome to #{@app_name}
+
+================================
+
+Admin Panel
+* Visit /admin
+* Please refer to db/seeds.rb for RailsAdmin default username and password
+TEXT
 remove_dir 'test'
 run 'cp config/database.yml config/database.yml.example'
 append_to_file '.gitignore', %Q{config/database.yml}
+
+display "Git Initial Commit"
+git :init
+git :add => '.'
+git :commit => "-aqm 'Initial commit'"

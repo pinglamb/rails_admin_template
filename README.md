@@ -4,7 +4,7 @@ A [Rails Template](http://m.onkey.org/rails-templates) to setup Rails applicatio
 
 ## Features
 
-* Setup project rvm (Inspired from [greendog99/greendog-rails-template](https://github.com/greendog99/greendog-rails-template)
+* Setup project rvm (Inspired from [greendog99/greendog-rails-template](https://github.com/greendog99/greendog-rails-template))
 * Install [RSpec](https://github.com/dchelimsky/rspec), [Cucumber](https://github.com/cucumber/cucumber), [FactoryGirl](https://github.com/thoughtbot/factory_girl)
 * Install [RailsAdmin](https://github.com/sferik/rails_admin)
 * Generate Administrator model
@@ -16,7 +16,7 @@ A [Rails Template](http://m.onkey.org/rails-templates) to setup Rails applicatio
 
 * Ruby 1.8.7 or 1.9.2+
 * Rails 3.1+
-* [RVM](https://rvm.beginrescueend.com/)
+* [RVM](https://rvm.beginrescueend.com/) 1.8.0
 
 ## Usage
 
